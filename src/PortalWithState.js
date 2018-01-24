@@ -40,10 +40,11 @@ class PortalWithState extends React.Component {
     if (this.state.active) {
       return;
     }
-    if (e && e.nativeEvent) {
-      e.nativeEvent.stopImmediatePropagation();
-    }
-    this.setState({ active: true }, this.props.onOpen);
+    this.setState({ active: true, opening: true }, this.props.onOpen);
+
+    setTimeout(() => {
+      this.setState({ active: true, opening: false });
+    }, 0);
   }
 
   closePortal() {
@@ -69,7 +70,7 @@ class PortalWithState extends React.Component {
   }
 
   handleOutsideMouseClick(e) {
-    if (!this.state.active) {
+    if (!this.state.active || this.state.opening) {
       return;
     }
     const root = this.portalNode.props.node || this.portalNode.defaultNode;
