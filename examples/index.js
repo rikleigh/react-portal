@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ifReact from 'enzyme-adapter-react-helper/build/ifReact';
-import Portal from '../src/PortalCompat';
-import PortalWithState from '../src/PortalWithState';
+import { Portal, PortalWithState } from '../src';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -51,14 +50,14 @@ export default class App extends React.Component {
         </button>
         {this.state.isPortalTwoActive && (
           <Portal node={document && document.getElementById('user-node')}>
-            <p>This thing was portaled!</p>
+            <p>This thing was portaled with custom node!</p>
           </Portal>
         )}
 
         <h2>PortalWithState</h2>
         <PortalWithState closeOnOutsideClick closeOnEsc>
           {ifReact(
-            '< 16',
+            '< 16.2',
             ({ openPortal, closePortal, isOpen, portal }) => (
               <div>
                 <button key="foo" onClick={openPortal}>
@@ -73,18 +72,20 @@ export default class App extends React.Component {
                 )}
               </div>
             ),
-            ({ openPortal, closePortal, isOpen, portal }) => [
-              <button key="foo" onClick={openPortal}>
-                Open Portal {isOpen && '(this counts as an outside click)'}
-              </button>,
-              portal(
-                <p>
-                  This is more advanced Portal. It handles its own state.{' '}
-                  <button onClick={closePortal}>Close me!</button>, hit ESC or
-                  click outside of me.
-                </p>
-              )
-            ]
+            ({ openPortal, closePortal, isOpen, portal }) => (
+              <React.Fragment>
+                <button onClick={openPortal}>
+                  Open Portal {isOpen && '(this counts as an outside click)'}
+                </button>
+                {portal(
+                  <p>
+                    This is more advanced Portal. It handles its own state.{' '}
+                    <button onClick={closePortal}>Close me!</button>, hit ESC or
+                    click outside of me.
+                  </p>
+                )}
+              </React.Fragment>
+            )
           )}
         </PortalWithState>
       </div>
